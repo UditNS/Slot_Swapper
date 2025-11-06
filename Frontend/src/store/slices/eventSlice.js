@@ -8,7 +8,8 @@ export const fetchEvents = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await eventAPI.getAll();
-      return response.data.events;
+      // Backend returns array directly, not wrapped in 'events'
+      return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
       return rejectWithValue(error.response?.data?.error || 'Failed to fetch events');
     }
@@ -20,7 +21,8 @@ export const createEvent = createAsyncThunk(
   async (eventData, { rejectWithValue }) => {
     try {
       const response = await eventAPI.create(eventData);
-      return response.data.event;
+      // Backend returns event directly, not wrapped
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.error || 'Failed to create event');
     }
@@ -32,7 +34,7 @@ export const updateEvent = createAsyncThunk(
   async ({ id, data }, { rejectWithValue }) => {
     try {
       const response = await eventAPI.update(id, data);
-      return response.data.event;
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.error || 'Failed to update event');
     }
@@ -56,7 +58,7 @@ export const toggleSwappable = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const response = await eventAPI.toggleSwappable(id);
-      return response.data.event;
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.error || 'Failed to toggle status');
     }

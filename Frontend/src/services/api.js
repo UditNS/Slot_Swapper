@@ -1,16 +1,15 @@
-
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Create axios instance
 const api = axios.create({
-    baseURL: API_URL,
-    withCredentials: true ,
-    headers: {
+  baseURL: API_URL,
+  withCredentials: true,
+  headers: {
     'Content-Type': 'application/json',
-    },
-    timeout: 10000,
+  },
+  timeout: 10000,
 });
 
 // Request interceptor - Add token to all requests
@@ -48,23 +47,16 @@ api.interceptors.response.use(
   }
 );
 
-// ========================================
 // AUTH API
-// ========================================
 export const authAPI = {
   signup: (data) => api.post('/auth/signup', data),
   login: (data) => api.post('/auth/login', data),
   getMe: () => api.get('/auth/me'),
-  updateProfile: (data) => api.put('/auth/profile', data),
-  changePassword: (data) => api.post('/auth/change-password', data),
-  verifyToken: () => api.post('/auth/verify-token'),
 };
 
-// ========================================
 // EVENT API
-// ========================================
 export const eventAPI = {
-  getAll: (params) => api.get('/events', { params }),
+  getAll: () => api.get('/events'),
   getOne: (id) => api.get(`/events/${id}`),
   create: (data) => api.post('/events', data),
   update: (id, data) => api.put(`/events/${id}`, data),
@@ -73,15 +65,13 @@ export const eventAPI = {
   getStats: () => api.get('/events/stats/upcoming'),
 };
 
-// ========================================
-// SWAP API
-// ========================================
+// SWAP API  
 export const swapAPI = {
-  getSwappableSlots: (params) => api.get('/swaps/swappable-slots', { params }),
+  getSwappableSlots: () => api.get('/swaps/swappable-slots'),
   createSwapRequest: (data) => api.post('/swaps/swap-request', data),
-  respondToSwap: (requestId, accepted) => 
+  respondToSwap: (requestId, accepted) =>
     api.post(`/swaps/swap-response/${requestId}`, { accepted }),
-  getMyRequests: (params) => api.get('/swaps/my-requests', { params }),
+  getMyRequests: () => api.get('/swaps/my-requests'),
   getRequest: (requestId) => api.get(`/swaps/request/${requestId}`),
   cancelSwapRequest: (requestId) => api.delete(`/swaps/cancel/${requestId}`),
   getStats: () => api.get('/swaps/stats'),

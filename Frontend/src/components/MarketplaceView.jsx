@@ -66,7 +66,7 @@ const MarketplaceView = () => {
     }
   };
 
-  if (loading && swappableSlots.length === 0) {
+  if (loading && swappableSlots?.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
@@ -99,7 +99,7 @@ const MarketplaceView = () => {
       )}
 
       {/* Available Slots */}
-      {swappableSlots.length === 0 ? (
+      {swappableSlots?.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-300">
           <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No slots available</h3>
@@ -107,7 +107,7 @@ const MarketplaceView = () => {
         </div>
       ) : (
         <div className="grid gap-4">
-          {swappableSlots.map((slot) => (
+          {swappableSlots?.map((slot) => (
             <div
               key={slot.id}
               className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition"

@@ -131,5 +131,25 @@ router.patch('/:id/toggle-swappable', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+// GET - Get event statistics
+router.get('/stats/upcoming', async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const total = await Event.countDocuments({ userId });
+    const busy = await Event.countDocuments({ userId, status: 'BUSY' });
+    const swappable = await Event.countDocuments({ userId, status: 'SWAPPABLE' });
+    const swapPending = await Event.countDocuments({ userId, status: 'SWAP_PENDING' });
+
+    res.json({
+      total,
+      busy,
+      swappable,
+      swapPending,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 module.exports = router;

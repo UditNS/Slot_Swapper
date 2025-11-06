@@ -265,4 +265,91 @@ router.get('/request/:requestId', async (req, res) => {
   }
 });
 
+// GET - Get swap statistics
+router.get('/stats', async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const total = await SwapRequest.countDocuments({
+      $or: [{ requesterId: userId }, { recipientId: userId }],
+    });
+
+    const pending = await SwapRequest.countDocuments({
+      $or: [{ requesterId: userId }, { recipientId: userId }],
+      status: 'PENDING',
+    });
+
+    const accepted = await SwapRequest.countDocuments({
+      $or: [{ requesterId: userId }, { recipientId: userId }],
+      status: 'ACCEPTED',
+    });
+
+    const rejected = await SwapRequest.countDocuments({
+      $or: [{ requesterId: userId }, { recipientId: userId }],
+      status: 'REJECTED',
+    });
+
+    res.json({
+      total,
+      pending,
+      accepted,
+      rejected,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// DELETE - Cancel swap request (NEW)
+router.delete('/cancel/:requestId', async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { requestId } = req.params;
+
+    const swapRequest = await SwapRequest.findById(requestId)
+      .populate('mySlotId')
+      .populate('theirSlotId')
+      .session(session);
+
+    if (!swapRequest) {
+      await session.abortTransaction();
+      return res.status(404).json({ error: 'Swap request not found' });
+    }
+
+    // Verify the user is the requester
+    if (swapRequest.requesterId.toString() !== req.userId) {
+      await session.abortTransaction();
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    // Set both slots back to SWAPPABLE
+    const mySlot = await Event.findById(swapRequest.mySlotId).session(session);
+    const theirSlot = await Event.findById(swapRequest.theirSlotId).session(session);
+
+    if (mySlot) {
+      mySlot.status = 'SWAPPABLE';
+      await mySlot.save({ session });
+    }
+
+    if (theirSlot) {
+      theirSlot.status = 'SWAPPABLE';
+      await theirSlot.save({ session });
+    }
+
+    // Delete the swap request
+    await swapRequest.deleteOne({ session });
+
+    await session.commitTransaction();
+
+    res.json({ message: 'Swap request cancelled successfully' });
+  } catch (error) {
+    await session.abortTransaction();
+    res.status(500).json({ error: error.message });
+  } finally {
+    session.endSession();
+  }
+});
+
 module.exports = router;

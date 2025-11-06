@@ -41,7 +41,7 @@ const Dashboard = () => {
     navigate('/login');
   };
 
-  const pendingIncoming = incomingRequests.filter(r => r.status === 'PENDING').length;
+  const pendingIncoming = incomingRequests?.filter(r => r.status === 'PENDING')?.length;
 
   return (
     <div className="min-h-screen bg-gray-50">

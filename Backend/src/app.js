@@ -1,37 +1,17 @@
 const express = require('express');
 const connectDB = require('./config/database');
 const cors = require('cors');
-const dotenv = require('dotenv');
 const app = express();
 
-dotenv.config();
+require('dotenv').config()
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
+// CORS Configuration
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}))
 
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'http://localhost:3000',
-      'http://127.0.0.1:5173',
-      'http://127.0.0.1:3000',
-      process.env.FRONTEND_URL,
-    ].filter(Boolean);
-
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else if (process.env.NODE_ENV === 'development') {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-};
-
-app.use(cors(corsOptions)); // ✅ Handles all methods including OPTIONS automatically
+// Body parsing middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -40,17 +20,32 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/events', require('./routes/events'));
 app.use('/api/swaps', require('./routes/swap'));
 
+// Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'SlotSwapper API is running' });
 });
 
-const PORT = process.env.PORT || 5000;
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  res.status(err.status || 500).json({
+    error: err.message || 'Internal server error',
+  });
+});
+
+const PORT = process.env.PORT || 4000;
 
 connectDB()
   .then(() => {
     console.log('✅ MongoDB Connected');
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`🌍 CORS enabled for development mode`);
     });
   })
   .catch((err) => console.error('❌ MongoDB Connection Error:', err));

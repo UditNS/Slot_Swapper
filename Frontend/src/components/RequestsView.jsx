@@ -64,7 +64,7 @@ const RequestsView = () => {
     );
   };
 
-  if (loading && incomingRequests.length === 0 && outgoingRequests.length === 0) {
+  if (loading && incomingRequests?.length === 0 && outgoingRequests?.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
@@ -75,8 +75,8 @@ const RequestsView = () => {
     );
   }
 
-  const pendingIncoming = incomingRequests.filter((r) => r.status === 'PENDING');
-  const pendingOutgoing = outgoingRequests.filter((r) => r.status === 'PENDING');
+  const pendingIncoming = incomingRequests?.filter((r) => r.status === 'PENDING');
+  const pendingOutgoing = outgoingRequests?.filter((r) => r.status === 'PENDING');
 
   return (
     <div className="space-y-8">
@@ -95,7 +95,7 @@ const RequestsView = () => {
             <h2 className="text-2xl font-bold text-gray-900">Incoming Requests</h2>
             <p className="text-gray-600 mt-1">
               Swap requests from other users
-              {pendingIncoming.length > 0 && (
+              {pendingIncoming?.length > 0 && (
                 <span className="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">
                   {pendingIncoming.length} pending
                 </span>
@@ -104,7 +104,7 @@ const RequestsView = () => {
           </div>
         </div>
 
-        {incomingRequests.length === 0 ? (
+        {incomingRequests?.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-300">
             <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No incoming requests</h3>
@@ -112,7 +112,7 @@ const RequestsView = () => {
           </div>
         ) : (
           <div className="grid gap-4">
-            {incomingRequests.map((request) => (
+            {incomingRequests?.map((request) => (
               <div
                 key={request._id}
                 className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
@@ -213,7 +213,7 @@ const RequestsView = () => {
             <h2 className="text-2xl font-bold text-gray-900">Outgoing Requests</h2>
             <p className="text-gray-600 mt-1">
               Swap requests you've sent to others
-              {pendingOutgoing.length > 0 && (
+              {pendingOutgoing?.length > 0 && (
                 <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
                   {pendingOutgoing.length} pending
                 </span>
@@ -222,7 +222,7 @@ const RequestsView = () => {
           </div>
         </div>
 
-        {outgoingRequests.length === 0 ? (
+        {outgoingRequests?.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-300">
             <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No outgoing requests</h3>
@@ -230,7 +230,7 @@ const RequestsView = () => {
           </div>
         ) : (
           <div className="grid gap-4">
-            {outgoingRequests.map((request) => (
+            {outgoingRequests?.map((request) => (
               <div
                 key={request._id}
                 className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"

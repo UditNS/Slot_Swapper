@@ -9,7 +9,7 @@ import {
   toggleSwappable,
   clearError,
 } from '../store/slices/eventSlice';
-import { Plus, Clock, X, Edit2, Trash2, AlertCircle } from 'lucide-react';
+import { Plus, Clock, X, Edit2, Trash2, AlertCircle, Calendar } from 'lucide-react';
 import CreateEventModal from './CreateEventModal';
 import EditEventModal from './EditEventModal';
 
@@ -115,7 +115,7 @@ const CalendarView = () => {
       {/* Error Message */}
       {error && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
-          <AlertCircle className="w-5 h-5 flex-shrink-0" />
+          <AlertCircle className="w-5 h-5 hrink-0" />
           <span className="text-sm">{error}</span>
           <button
             onClick={() => dispatch(clearError())}
