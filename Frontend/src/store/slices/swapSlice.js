@@ -1,4 +1,3 @@
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { swapAPI } from '../../services/api';
 
@@ -8,7 +7,8 @@ export const fetchSwappableSlots = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await swapAPI.getSwappableSlots();
-      return response.data.slots;
+      // Backend returns array directly, not wrapped in 'slots'
+      return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
       return rejectWithValue(error.response?.data?.error || 'Failed to fetch slots');
     }
@@ -20,7 +20,8 @@ export const createSwapRequest = createAsyncThunk(
   async (requestData, { rejectWithValue }) => {
     try {
       const response = await swapAPI.createSwapRequest(requestData);
-      return response.data.swapRequest;
+      // Backend returns swap request directly
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.error || 'Failed to create swap request');
     }
@@ -138,8 +139,9 @@ const swapsSlice = createSlice({
       })
       .addCase(fetchMyRequests.fulfilled, (state, action) => {
         state.loading = false;
-        state.incomingRequests = action.payload.incoming.requests;
-        state.outgoingRequests = action.payload.outgoing.requests;
+        // Fixed: Handle data structure correctly
+        state.incomingRequests = action.payload.incoming || [];
+        state.outgoingRequests = action.payload.outgoing || [];
       })
       .addCase(fetchMyRequests.rejected, (state, action) => {
         state.loading = false;
